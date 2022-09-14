@@ -24,15 +24,38 @@ SOFTWARE.
 
 #include <memory>
 
+#include <ml/sklearn/metrics/Distance.hpp>
 #include <np/Array.hpp>
 
 namespace ml {
     namespace sklearn {
         namespace metrics {
-            template <typename DType>
-            class ManhattanDistance {
+            // np.absolute(X - Y)
+
+            template <typename DType, np::Size... Sizes>
+            class ManhattanDistance;
+
+            template <typename DType, np::Size NSamples1, np::Size NSamples2, np::Size NFeatures>
+            class ManhattanDistance<DType, NSamples1, NSamples2, NFeatures> : public Distance<DType, NSamples1, NSamples2, NFeatures> {
             public:
-                virtual np::Array<DType> pairwise(const np::Array<DType>& X) = 0;
+                virtual np::Array<DType, NSamples1, NSamples1> pairwise(const np::Array<DType, NSamples1, NFeatures>& X) {
+                    return sqrt(dot(X, X) - 2 * dot(X, X) + dot(X, X));
+                }
+
+                virtual np::Array<DType, NSamples1, NSamples2> pairwise(const np::Array<DType, NSamples1, NFeatures>& X, const np::Array<DType, NSamples2, NFeatures>& Y) {
+                    //dist(x, y) = sqrt(dot(x, x) - 2 * dot(x, y) + dot(y, y))
+                    return sqrt(dot(X, X) - 2 * dot(X, Y) + dot(Y, Y));
+                }
+            };
+
+            template <typename DType>
+            class ManhattanDistance<DType> : public Distance<DType> {
+            public:
+                virtual np::Array<DType> pairwise(const np::Array<DType>& X) {
+                    if (X.shape().size() != 2) {
+                        throw std::runtime_error("2D array expected");
+                    }
+                }
             };
 
             template <typename DType>

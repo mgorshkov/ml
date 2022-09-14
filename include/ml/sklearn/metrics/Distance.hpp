@@ -21,12 +21,7 @@ SOFTWARE.
 
 #pragma once
 
-#include <ml/sklearn/metrics/EuclideanDistance.hpp>
-#include <ml/sklearn/metrics/ManhattanDistance.hpp>
-#include <ml/sklearn/metrics/ChebyshevDistance.hpp>
-#include <ml/sklearn/metrics/MinkowskiDistance.hpp>
-#include <ml/sklearn/metrics/DistanceMetricType.hpp>
-#include <ml/sklearn/metrics/Metric.hpp>
+#include <np/Array.hpp>
 
 namespace ml {
     namespace sklearn {

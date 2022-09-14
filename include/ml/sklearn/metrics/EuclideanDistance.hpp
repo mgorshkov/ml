@@ -33,6 +33,7 @@ namespace ml {
             template <typename DType, np::Size... Sizes>
             class EuclideanDistance;
 
+            //np.sqrt(np.sum(np.square(X - Y))
             template <typename DType, np::Size NSamples1, np::Size NSamples2, np::Size NFeatures>
             class EuclideanDistance<DType, NSamples1, NSamples2, NFeatures> : public Distance<DType, NSamples1, NSamples2, NFeatures> {
             public:

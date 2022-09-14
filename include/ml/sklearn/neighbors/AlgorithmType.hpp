@@ -28,7 +28,7 @@ namespace ml {
                 kAuto,
                 kBallTree,
                 kKdTree,
-                kBrute
+                kBruteForce
             };
         }
     }

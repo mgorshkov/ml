@@ -31,24 +31,25 @@ SOFTWARE.
 namespace ml {
     namespace sklearn {
         namespace metrics {
-            template <typename DType>
+            template<typename DType>
             class DistanceMetric {
             public:
                 static MetricPtr<DType> get_metric(DistanceMetricType type) {
-                switch (type) {
-                    case DistanceMetricType::kEuclidean:
-                        return EuclideanDistancePtr<DType>{};
-                    case DistanceMetricType::kManhattan:
-                        return ManhattanDistancePtr<DType>{};
-                    case DistanceMetricType::kChebyshev:
-                        return ChebyshevDistancePtr<DType>{};
-                    case DistanceMetricType::kMinkowski:
-                        return MinkowskiDistancePtr<DType>{};
-                    default:
-                        throw std::runtime_error("Unknown metric type");
-                        return nullptr;
+                    switch (type) {
+                        case DistanceMetricType::kEuclidean:
+                            return EuclideanDistancePtr<DType>{};
+                        case DistanceMetricType::kManhattan:
+                            return ManhattanDistancePtr<DType>{};
+                        case DistanceMetricType::kChebyshev:
+                            return ChebyshevDistancePtr<DType>{};
+                        case DistanceMetricType::kMinkowski:
+                            return MinkowskiDistancePtr<DType>{};
+                        default:
+                            throw std::runtime_error("Unknown metric type");
+                            return nullptr;
+                    }
                 }
-            }
-        };
+            };
+        }
     }
 }
