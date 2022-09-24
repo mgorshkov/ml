@@ -21,12 +21,21 @@ include(FetchContent)
 
 FetchContent_Declare(
     np
-    URL https://mgorshkov.jfrog.io/artifactory/default-generic-local/np/np-0.0.2.tgz
+    URL https://mgorshkov.jfrog.io/artifactory/default-generic-local/np/np-0.0.3.tgz
 )
 
 FetchContent_MakeAvailable(np)
 
 include_directories(include ${np_SOURCE_DIR}/include)
+
+FetchContent_Declare(
+    scipy
+    URL https://mgorshkov.jfrog.io/artifactory/default-generic-local/scipy/scipy-0.0.1.tgz
+)
+
+FetchContent_MakeAvailable(scipy)
+
+include_directories(include ${scipy_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR} "src/sklearn/datasets/*.cpp")
 add_library(${ML} ${SOURCES})

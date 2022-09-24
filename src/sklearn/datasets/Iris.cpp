@@ -26,7 +26,7 @@ namespace ml {
 
 using namespace np;
 
-const char* Iris::DESCR = R"(
+const char* Iris::kDescr = R"(
 .. _iris_dataset:
 
 Iris plants dataset
@@ -91,7 +91,10 @@ on Information Theory, May 1972, 431-433.
 conceptual clustering system finds 3 classes in the data.
 - Many, many more ...)";
 
-static float_ kData[150][4] =
+static const np::Size kSamples = 150;
+static const np::Size kDims = 4;
+
+static float_ kData[kSamples][kDims] =
         {{5.1, 3.5,  1.4,  0.2},
         {4.9,  3.,   1.4,  0.2},
         {4.7,  3.2,  1.3,  0.2},
@@ -243,16 +246,16 @@ static float_ kData[150][4] =
         {6.2,  3.4,  5.4,  2.3},
         {5.9,  3. ,  5.1,  1.8}};
 
-Array<float_, Iris::kSamples, 4> Iris::data{kData};
-
-const Array<short_, Iris::kSamples> Iris::target{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+static short_ kTarget[kSamples] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 2, 2};
 
-std::unordered_map<const char *, std::any> Iris::map{{"DESCR", DESCR}, {"data", data}, {"target", target}};
-
+            void Iris::load() {
+                m_data = np::Array<np::float_>{kData};
+                m_target = np::Array<np::short_>{kTarget};
+            }
         }
     }
 }

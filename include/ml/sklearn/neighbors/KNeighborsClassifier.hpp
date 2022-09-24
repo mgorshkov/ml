@@ -25,18 +25,24 @@ SOFTWARE.
 #include <ml/sklearn/neighbors/AlgorithmType.hpp>
 #include <ml/sklearn/neighbors/WeightsType.hpp>
 #include <np/Array.hpp>
+#include <scipy/stats/mode.hpp>
 
 namespace ml {
     namespace sklearn {
         namespace neighbors {
             using Size = np::Size;
 
-            template<typename DType, Size SizeT, Size... SizeTs>
-            using Array = np::Array<DType, SizeT, SizeTs...>;
+            template<typename DType = np::DTypeDefault, Size SizeT = np::SIZE_DEFAULT, Size... Sizes>
+            using Array = np::Array<DType, SizeT, Sizes...>;
+
+            using namespace scipy::stats;
 
             /// Classifier implementing the k-nearest neighbors vote.
+            template <typename DataType, typename TargetType, np::Size... Sizes>
+            class KNeighborsClassifier;
+
             template <typename DataType, typename TargetType, np::Size Count, np::Size FeatureCount>
-            class KNeighborsClassifier {
+            class KNeighborsClassifier<DataType, TargetType, Count, FeatureCount> {
             public:
                 KNeighborsClassifier(int n_neighbors = 5,
                                      WeightsType weights = WeightsType::kUniform,
@@ -49,6 +55,11 @@ namespace ml {
                     if (algorithm != AlgorithmType::kAuto && algorithm != AlgorithmType::kBruteForce) {
                         throw std::runtime_error("Only BruteForce algorithm is currently implemented");
                     }
+                    if (weights != WeightsType::kUniform) {
+                        throw std::runtime_error("Only Uniform weights are currently implemented");
+                    }
+                    (void)leaf_size;
+                    (void)p;
                 }
 
                 // Fit the k-nearest neighbors classifier from the training dataset.
@@ -67,20 +78,22 @@ namespace ml {
 
                     // Calculating distances
                     for (std::size_t i = 0; i < X.shape[0]; ++i) {  //  for every sample in X_test
-                        distance = []  // distance
+                        Array<Array<DataType, Count>> distances;  // distance
                         for (std::size_t j = 0; j < m_X.shape[0]; ++j) {
-                            auto d = metric(X[i, :], m_X[j, :]);
-                            distance.append((d, m_y[j]))
+                            auto d = metric->pairwise(X["i, :"], m_X["j, :"]);
+                            distances.append((d, m_y[j]));
                         }
-                        distance = sorted(distance) # sorting distances in ascending order
+                        distances.sort(); // sorting distances in ascending order
 
                         // Getting k nearest neighbors
-                        neighbors = []
-                        for item in range(self.k):
-                            neighbors.append(distance[item][1])  # appending K nearest neighbors
+                        Array<Array<DataType, Count>> neighbors;
+                        for (auto item = 0; item < m_neighbors; ++item) {
+                            neighbors.append(distances[item][1]);  // appending K nearest neighbors
+                        }
 
                         // Making predictions
-                        y_pred.append(stats.mode(neighbors)[0][0])
+                        y_pred.append(neighbors[0][0]);
+                    }
                     return y_pred;
                 }
 
@@ -89,6 +102,69 @@ namespace ml {
                 metrics::DistanceMetricType m_metric;
                 const Array<DataType, Count, FeatureCount> m_X;
                 const Array<TargetType, Count> m_y;
+            };
+
+            template <typename DataType, typename TargetType>
+            class KNeighborsClassifier<DataType, TargetType> {
+            public:
+                KNeighborsClassifier(int n_neighbors = 5,
+                                     WeightsType weights = WeightsType::kUniform,
+                                     AlgorithmType algorithm = AlgorithmType::kAuto,
+                                     int leaf_size = 30,
+                                     int p = 2,
+                                     metrics::DistanceMetricType metric = metrics::DistanceMetricType::kMinkowski)
+                        : m_neighbors{n_neighbors}
+                        , m_metric{metric}{
+                    if (algorithm != AlgorithmType::kAuto && algorithm != AlgorithmType::kBruteForce) {
+                        throw std::runtime_error("Only BruteForce algorithm is currently implemented");
+                    }
+                    if (weights != WeightsType::kUniform) {
+                        throw std::runtime_error("Only Uniform weights are currently implemented");
+                    }
+                    (void)leaf_size;
+                    (void)p;
+                }
+
+                // Fit the k-nearest neighbors classifier from the training dataset.
+                // X - training data
+                // y - target values
+                void fit(const Array<DataType>& X, const Array<TargetType>& y) {
+                    m_X = X.copy();
+                    m_y = y.copy();
+                }
+
+                // Predict the class labels for the provided data.
+                // X - Test samples.
+                Array<TargetType> predict(const Array<DataType>& X) {
+                    Array<TargetType> y_pred;
+                    auto metric = metrics::DistanceMetric<DataType>::get_metric(m_metric);
+
+                    // Calculating distances
+                    for (std::size_t i = 0; i < X.shape()[0]; ++i) {  //  for every sample in X_test
+                        std::vector<Array<DataType>> distances;  // distance
+                        for (std::size_t j = 0; j < m_X.shape()[0]; ++j) {
+                            auto d = metric->pairwise(X["i, :"], m_X["j, :"]);
+                            distances.push_back(Array<DataType>{d, m_y[j]});
+                        }
+                        distances.sort(); // sorting distances in ascending order
+
+                        // Getting k nearest neighbors
+                        Array<DataType> neighbors{{2, X.shape()}};
+                        for (auto item = 0; item < m_neighbors; ++item) {
+                            neighbors.distances[item][1];  // appending K nearest neighbors
+                        }
+
+                        // Making predictions
+                        y_pred.append(mode(neighbors)[0][0]);
+                    }
+                    return y_pred;
+                }
+
+            private:
+                int m_neighbors;
+                metrics::DistanceMetricType m_metric;
+                Array<DataType> m_X;
+                Array<TargetType> m_y;
             };
         }
     }

@@ -1,5 +1,6 @@
 /*
 ML Methods on top of NP library
+
 Copyright (c) 2022 Mikhail Gorshkov (mikhail.gorshkov@gmail.com)
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -18,22 +19,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <iostream>
+#include <ml/sklearn/datasets/Iris.hpp>
 
-#include <ml/sklearn/datasets/datasets.hpp>
-#include <ml/sklearn/neighbors/KNeighborsClassifier.hpp>
-
-int main(int, char **) {
-    using namespace ml::sklearn::datasets;
-    using namespace ml::sklearn::neighbors;
-
-    auto iris = load_iris();
-    auto data = iris.data();
-    auto target = iris.target();
-
-    auto kn = KNeighborsClassifier<np::float_, np::short_>{};
-    kn.fit(data["1:"], target["1:"]);
-    std::cout << kn.predict(data["0"]) << std::endl;
-    // 0
-    return 0;
+namespace ml {
+    namespace sklearn {
+        namespace datasets {
+            Iris load_iris() {
+                Iris iris;
+                iris.load();
+                return iris;
+            }
+        }
+    }
 }

@@ -34,6 +34,7 @@ namespace ml {
             public:
                 virtual ~Metric() = default;
                 virtual np::Array<DType> pairwise(const np::Array<DType>& X) = 0;
+                virtual np::Array<DType> pairwise(const np::Array<DType>& X, const np::Array<DType>& Y) = 0;
             };
 
             template <typename DType>

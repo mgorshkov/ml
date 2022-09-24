@@ -30,15 +30,24 @@ namespace ml {
         namespace datasets {
             class Iris {
             public:
-                const std::any& operator[](const char *key) const {
-                    return map[key];
+                np::Array<np::float_> data() const {
+                    return m_data;
                 }
 
-                static const char* DESCR;
-                static const np::Size kSamples = 150;
-                static np::Array<np::float_, kSamples, 4> data;
-                static const np::Array<np::short_, kSamples> target;
-                static std::unordered_map<const char *, std::any> map;
+                np::Array<np::short_> target() const {
+                    return m_target;
+                }
+
+                static const char* getDescr() {
+                    return kDescr;
+                }
+
+                void load();
+
+            private:
+                static const char* kDescr;
+                const np::Array<np::float_> m_data;
+                const np::Array<np::short_> m_target;
             };
         }
     }
